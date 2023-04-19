@@ -1,0 +1,26 @@
+web:
+  image: hyper/docker-registry-web
+  ports:
+    - "8000:8080"
+  links:
+    - registry
+  environment:
+    REGISTRY_URL: http://${REGISTRY_IP}:5000/v2
+    REGISTRY_NAME: localhost:40678
+  volumes:
+    - ./web/config.yml:/conf/config.yml:ro
+  restart: always
+  container_name: registry_web
+
+registry:
+  image: registry:2.8.1
+  ports:
+    - 5000:5000
+  environment:
+    REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
+    REGISTRY_STORAGE_DELETE_ENABLED: 'True'
+  volumes:
+    - /var/lib/registry:/var/lib/registry
+    - ./config.yml:/etc/docker/registry/config.yml
+  restart: always
+  container_name: registry_data
